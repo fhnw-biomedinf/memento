@@ -29,15 +29,21 @@ public class MementoView extends Region {
     private static final double OFFSET_Y = 50;
 
     private final ObjectProperty<Memento> selectionModel = new SimpleObjectProperty<>();
+    private final MementoModel model;
     private final Function1<MementoBranch, Color> colorProvider;
 
     public MementoView(MementoModel model, Function1<MementoBranch, Color> colorProvider) {
+        this.model = model;
         this.colorProvider = colorProvider;
         model.addListener(() -> {
             getChildren().clear();
             drawMementoBranch(model.getMasterBranch());
         });
         drawMementoBranch(model.getMasterBranch());
+    }
+
+    public MementoModel getModel() {
+        return model;
     }
 
     private Node createLabelledCircle(Memento memento, Color valueNodeColor) {

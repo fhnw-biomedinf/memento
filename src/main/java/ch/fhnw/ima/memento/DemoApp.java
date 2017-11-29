@@ -31,7 +31,7 @@ public class DemoApp extends Application {
     private static final double WIDTH = 600;
     private static final double HEIGHT = 600;
 
-    private static MementoModel createModel() {
+    private static MementoBranch createMasterBranch() {
         Memento one = new Memento("1");
         Memento two = new Memento("2");
         Memento three = new Memento("3");
@@ -44,15 +44,23 @@ public class DemoApp extends Application {
         three.appendInBranch(new Memento("A-3.1"));
         three.appendInBranch(new Memento("B-3.1")).append(new Memento("B-3.2"));
 
-        MementoModel model = new MementoModel();
-        model.getMasterBranch().appendAll(one, two, three);
-        return model;
+        MementoBranch masterBranch = new MementoBranch();
+        masterBranch.appendAll(one, two, three);
+        return masterBranch;
     }
+
+    private static Iterator<Color> createColorIterator() {
+        Stream<Color> colors = Stream.of(SolarizedColor.values()).map(v -> v.getColor().desaturate().desaturate());
+        return colors.cycle().iterator();
+    }
+
+    private Iterator<Color> colorIterator = createColorIterator();
 
     @Override
     public void start(Stage stage) {
 
-        MementoModel model = createModel();
+        MementoModel model = new MementoModel(createMasterBranch());
+
         Function1<MementoBranch, Color> colorProvider = createColorProvider();
         MementoView mementoView = new MementoView(model, colorProvider);
         Pane controlPanel = createControlPanel(mementoView);
@@ -92,21 +100,28 @@ public class DemoApp extends Application {
         forkButton.disableProperty().bind(selectionModel.isNull());
         forkButton.setOnAction(e -> selectionModel.get().appendInBranch(new Memento("*")));
 
-        HBox box = new HBox(10, selectedMementoLabel, selectedMementoValueLabel);
-        box.setAlignment(Pos.CENTER_LEFT);
+        Button resetButton = new Button("Reset");
+        resetButton.setOnAction(e -> {
+            colorIterator = createColorIterator();
+            view.getModel().setMasterBranch(createMasterBranch());
+        });
+
+        HBox centerBox = new HBox(10, selectedMementoLabel, selectedMementoValueLabel);
+        centerBox.setAlignment(Pos.CENTER_LEFT);
+
+        HBox rightBox = new HBox(10, forkButton, resetButton);
+        centerBox.setAlignment(Pos.CENTER_LEFT);
 
         BorderPane borderPane = new BorderPane();
         borderPane.setPadding(new Insets(10));
-        borderPane.setCenter(box);
-        borderPane.setRight(forkButton);
+        borderPane.setCenter(centerBox);
+        borderPane.setRight(rightBox);
         
         return borderPane;
     }
 
     private Function1<MementoBranch, Color> createColorProvider() {
         Map<MementoBranch, Color> colorCache = new HashMap<>();
-        Stream<Color> colors = Stream.of(SolarizedColor.values()).map(v -> v.getColor().desaturate().desaturate());
-        Iterator<Color> colorIterator = colors.cycle().iterator();
         return branch -> colorCache.computeIfAbsent(branch, b -> colorIterator.next());
     }
 

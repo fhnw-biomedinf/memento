@@ -47,6 +47,10 @@ public class MementoBranch {
         return listeners.add(listener);
     }
 
+    public boolean removeListener(Listener listener) {
+        return listeners.remove(listener);
+    }
+
     public interface Listener {
 
         void branchChanged(MementoBranch branch);
