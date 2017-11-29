@@ -4,7 +4,6 @@ import ch.fhnw.ima.memento.model.Memento;
 import ch.fhnw.ima.memento.model.MementoBranch;
 import ch.fhnw.ima.memento.model.MementoModel;
 import ch.fhnw.ima.memento.util.MementoHeightCalculator;
-import io.vavr.Function1;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -19,6 +18,8 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextBoundsType;
 
+import java.util.function.Function;
+
 public class MementoView extends Region {
 
     private static final Color CIRCLE_FILL_COLOR = new Color(0.9019608f, 0.9019608f, 0.98039216f, 0.7);
@@ -30,9 +31,9 @@ public class MementoView extends Region {
 
     private final ObjectProperty<Memento> selectionModel = new SimpleObjectProperty<>();
     private final MementoModel model;
-    private final Function1<MementoBranch, Color> colorProvider;
+    private final Function<MementoBranch, Color> colorProvider;
 
-    public MementoView(MementoModel model, Function1<MementoBranch, Color> colorProvider) {
+    public MementoView(MementoModel model, Function<MementoBranch, Color> colorProvider) {
         this.model = model;
         this.colorProvider = colorProvider;
         model.addListener(() -> {

@@ -2,7 +2,6 @@ package ch.fhnw.ima.memento.util;
 
 import ch.fhnw.ima.memento.model.Memento;
 import ch.fhnw.ima.memento.model.MementoBranch;
-import ch.fhnw.ima.memento.model.MementoModel;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -71,8 +70,7 @@ class MementoHeightCalculatorTest {
         three.appendInBranch(new Memento("A-3.1"));
         three.appendInBranch(new Memento("B-3.1")).append(new Memento("B-3.2"));
 
-        MementoModel model = new MementoModel();
-        MementoBranch masterBranch = model.getMasterBranch();
+        MementoBranch masterBranch = new MementoBranch();
         masterBranch.appendAll(one, two, three);
 
         assertEquals(3, MementoHeightCalculator.getRowHeight(masterBranch, 2));

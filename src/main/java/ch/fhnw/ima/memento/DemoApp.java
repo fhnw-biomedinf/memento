@@ -5,9 +5,6 @@ import ch.fhnw.ima.memento.model.MementoBranch;
 import ch.fhnw.ima.memento.model.MementoModel;
 import ch.fhnw.ima.memento.ui.MementoView;
 import ch.fhnw.ima.memento.util.SolarizedColor;
-import io.vavr.Function1;
-import io.vavr.collection.Iterator;
-import io.vavr.collection.Stream;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -23,8 +20,10 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class DemoApp extends Application {
 
@@ -50,8 +49,9 @@ public class DemoApp extends Application {
     }
 
     private static Iterator<Color> createColorIterator() {
-        Stream<Color> colors = Stream.of(SolarizedColor.values()).map(v -> v.getColor().desaturate().desaturate());
-        return colors.cycle().iterator();
+        List<Color> colors = Arrays.stream(SolarizedColor.values()).map(v -> v.getColor().desaturate().desaturate()).collect(Collectors.toList());
+        IntStream infiniteStream = IntStream.iterate(0, i -> i + 1);
+        return infiniteStream.mapToObj(i -> colors.get(i % colors.size())).iterator();
     }
 
     private Iterator<Color> colorIterator = createColorIterator();
@@ -61,7 +61,7 @@ public class DemoApp extends Application {
 
         MementoModel model = new MementoModel(createMasterBranch());
 
-        Function1<MementoBranch, Color> colorProvider = createColorProvider();
+        Function<MementoBranch, Color> colorProvider = createColorProvider();
         MementoView mementoView = new MementoView(model, colorProvider);
         Pane controlPanel = createControlPanel(mementoView);
         BorderPane root = new BorderPane();
@@ -120,7 +120,7 @@ public class DemoApp extends Application {
         return borderPane;
     }
 
-    private Function1<MementoBranch, Color> createColorProvider() {
+    private Function<MementoBranch, Color> createColorProvider() {
         Map<MementoBranch, Color> colorCache = new HashMap<>();
         return branch -> colorCache.computeIfAbsent(branch, b -> colorIterator.next());
     }

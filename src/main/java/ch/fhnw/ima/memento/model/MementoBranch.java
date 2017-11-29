@@ -1,17 +1,16 @@
 package ch.fhnw.ima.memento.model;
 
-import io.vavr.collection.List;
-import io.vavr.collection.Stream;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class MementoBranch {
 
     private final ObservableList<Memento> mementos = FXCollections.observableArrayList();
-
     private final java.util.List<Listener> listeners = new ArrayList<>();
 
     public MementoBranch() {
@@ -25,7 +24,7 @@ public class MementoBranch {
     }
 
     public List<Memento> getMementos() {
-        return List.ofAll(mementos);
+        return new ArrayList<>(mementos);
     }
 
     public void append(Memento memento) {
@@ -34,7 +33,7 @@ public class MementoBranch {
     }
 
     public void appendAll(Memento... newMementos) {
-        Stream.of(newMementos).forEach(this::append);
+        Arrays.asList(newMementos).forEach(this::append);
     }
 
     private void fireBranchChanged() {

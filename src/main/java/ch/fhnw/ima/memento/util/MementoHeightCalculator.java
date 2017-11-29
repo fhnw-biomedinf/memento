@@ -10,7 +10,7 @@ public final class MementoHeightCalculator {
             return 1;
         } else {
             int ownRowHeight = getOwnRowHeight(branch.getMementos().get(mementoIndex));
-            if (mementoIndex == branch.getMementos().length() - 1) {
+            if (mementoIndex == branch.getMementos().size() - 1) {
                 return ownRowHeight;
             } else {
                 return ownRowHeight + getRowHeight(branch, mementoIndex + 1) - 1;

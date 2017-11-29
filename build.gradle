@@ -12,7 +12,5 @@ repositories {
 }
 
 dependencies {
-    compile libraries.vavr
-
     testCompile libraries.junit
 }
