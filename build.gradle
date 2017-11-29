@@ -1,0 +1,18 @@
+plugins {
+  id 'ch.netzwerg.release' version '1.2.5'
+  id 'java'
+}
+
+apply from: 'gradle/dependencies.gradle'
+
+compileJava.options.encoding = 'UTF-8'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile libraries.vavr
+
+    testCompile libraries.junit
+}
