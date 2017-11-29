@@ -36,7 +36,7 @@ public class MementoView extends Region {
     private static final double OFFSET_X = 50;
     private static final double OFFSET_Y = 50;
 
-    private final ObjectProperty<Memento> selectionModel = new SimpleObjectProperty<>();
+    private final ObjectProperty<MementoContext> selectionModel = new SimpleObjectProperty<>(MementoContext.NONE);
     private final MementoModel model;
     private final Function<MementoBranch, Color> colorProvider;
 
@@ -45,6 +45,10 @@ public class MementoView extends Region {
         this.colorProvider = colorProvider;
         model.addListener(() -> {
             getChildren().clear();
+
+            // TODO: Clear selection to be on the safe side as long as MementoContext is not ID-based
+            selectionModel.set(MementoContext.NONE);
+
             drawMementoBranch(model.getMasterBranch());
         });
         drawMementoBranch(model.getMasterBranch());
@@ -65,18 +69,25 @@ public class MementoView extends Region {
         return model;
     }
 
-    private Node createLabelledCircle(Memento memento, double x, double y, Color valueNodeColor) {
+    private Node createLabelledCircle(MementoContext mementoContext, double x, double y, Color valueNodeColor) {
+        Memento memento = mementoContext.getMemento();
         Circle circle = new Circle(CIRCLE_RADIUS);
         circle.setFill(valueNodeColor);
         circle.setStrokeWidth(3);
         circle.strokeProperty().bind(Bindings.createObjectBinding(() -> {
-            if (memento.equals(selectionModel.get())) {
+            if (memento.equals(selectionModel.get().memento)) {
                 return CIRCLE_STROKE_COLOR_SELECTED;
             } else {
                 return CIRCLE_STROKE_COLOR_UNSELECTED;
             }
         }, selectionModel));
-        circle.setOnMouseClicked(e -> selectionModel.set(memento));
+        circle.setOnMouseClicked(e -> {
+            if (selectionModel.get().equals(mementoContext)) {
+                selectionModel.set(MementoContext.NONE);
+            } else {
+                selectionModel.set(mementoContext);
+            }
+        });
         circle.setCursor(Cursor.HAND);
 
         Text text = new Text(memento.getDisplayName());
@@ -111,7 +122,8 @@ public class MementoView extends Region {
             double x = mementoCol * OFFSET_X;
             double y = row * OFFSET_Y;
 
-            Node labelledCircle = createLabelledCircle(memento, x, y, color);
+            MementoContext mementoContext = new MementoContext(branch, memento, i == branch.getMementos().size() - 1);
+            Node labelledCircle = createLabelledCircle(mementoContext, x, y, color);
             nodeGroup.getChildren().add(labelledCircle);
 
             optionalParentCoordinates.ifPresent(parentCoordinates -> {
@@ -144,8 +156,42 @@ public class MementoView extends Region {
         }
     }
 
-    public ReadOnlyObjectProperty<Memento> getSelectionModel() {
+    public ReadOnlyObjectProperty<MementoContext> getSelectionModel() {
         return selectionModel;
+    }
+
+    public static final class MementoContext {
+
+        public static final MementoContext NONE = new MementoContext(MementoBranch.NONE, Memento.NONE, false);
+
+        private final MementoBranch branch;
+        private final Memento memento;
+        private final boolean isTip;
+
+        public MementoContext(MementoBranch branch, Memento memento, boolean isTip) {
+            this.branch = branch;
+            this.memento = memento;
+            this.isTip = isTip;
+        }
+
+        public MementoBranch getBranch() {
+            return branch;
+        }
+
+        public Memento getMemento() {
+            return memento;
+        }
+
+        public boolean isTip() {
+            return isTip;
+        }
+
+        public boolean isNone() {
+            return NONE == this;
+        }
+
+        // TODO: ID-based equals/hashCode
+
     }
 
 }

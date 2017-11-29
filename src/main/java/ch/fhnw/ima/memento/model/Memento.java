@@ -9,6 +9,8 @@ import java.util.List;
 
 public class Memento {
 
+    public static final Memento NONE = new Memento("–");
+
     private final String displayName;
     private final ObservableList<MementoBranch> branches = FXCollections.observableArrayList();
     private final java.util.List<Listener> listeners = new ArrayList<>();

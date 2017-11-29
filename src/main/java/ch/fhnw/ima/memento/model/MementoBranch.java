@@ -10,6 +10,8 @@ import java.util.List;
 
 public class MementoBranch {
 
+    public static final MementoBranch NONE = new MementoBranch();
+
     private final ObservableList<Memento> mementos = FXCollections.observableArrayList();
     private final java.util.List<Listener> listeners = new ArrayList<>();
 

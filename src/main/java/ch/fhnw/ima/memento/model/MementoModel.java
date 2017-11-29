@@ -8,8 +8,6 @@ import java.util.List;
 
 public class MementoModel {
 
-    private static final MementoBranch EMPTY = new MementoBranch();
-
     private final ObjectProperty<MementoBranch> masterBranchProperty = new SimpleObjectProperty<>();
     private final List<Listener> listeners = new ArrayList<>();
     private final MementoBranch.Listener masterBranchListener = branch -> fireModelChanged();
@@ -28,7 +26,7 @@ public class MementoModel {
     }
 
     private static MementoBranch nullSafe(MementoBranch masterBranch) {
-        return masterBranch == null ? EMPTY : masterBranch;
+        return masterBranch == null ? MementoBranch.NONE : masterBranch;
     }
 
     public MementoBranch getMasterBranch() {
