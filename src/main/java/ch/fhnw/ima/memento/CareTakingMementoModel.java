@@ -133,6 +133,11 @@ public final class CareTakingMementoModel<S> implements MementoModel<S> {
         listeners = listeners.append(listener);
     }
 
+    @Override
+    public void removeListener(Listener listener) {
+        listeners = listeners.remove(listener);
+    }
+
     private void fireModelChanged(MementoRef mementoRef) {
         for (Listener listener : listeners) {
             listener.modelChanged(mementoRef);

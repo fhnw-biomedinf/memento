@@ -27,6 +27,8 @@ public interface MementoModel<S> {
 
     void addListener(Listener listener);
 
+    void removeListener(Listener listener);
+
     interface Listener {
 
         void modelChanged(MementoRef mementoRef);
