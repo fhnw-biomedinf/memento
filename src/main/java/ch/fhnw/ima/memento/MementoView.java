@@ -95,13 +95,15 @@ public final class MementoView<S> extends Region {
             Circle circle = new Circle(CIRCLE_RADIUS);
             circle.setFill(valueNodeColor);
             circle.setStrokeWidth(3);
+
             circle.strokeProperty().bind(Bindings.createObjectBinding(() -> {
-                if (mementoEq(memento, selectionModel.get())) {
+                if (mementoEq(memento, selectionModel.get()) || circle.isHover()) {
                     return CIRCLE_STROKE_COLOR_SELECTED;
                 } else {
                     return CIRCLE_STROKE_COLOR_UNSELECTED;
                 }
-            }, selectionModel));
+            }, selectionModel, circle.hoverProperty()));
+
             circle.setOnMouseClicked(e -> selectionModel.set(Option.some(mementoRef)));
             circle.setCursor(Cursor.HAND);
 
