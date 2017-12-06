@@ -1,6 +1,7 @@
 package ch.fhnw.ima.memento;
 
 import io.vavr.collection.HashMap;
+import io.vavr.collection.LinkedHashMap;
 import io.vavr.collection.List;
 import io.vavr.collection.Map;
 import io.vavr.control.Option;
@@ -28,7 +29,7 @@ public final class MementoModel<S> {
     private final MementoBranchId masterBranchId;
 
     private List<Listener> listeners = List.empty();
-    private Map<MementoId, Memento<S>> mementos = HashMap.empty();
+    private Map<MementoId, Memento<S>> mementos = LinkedHashMap.empty();
     private Map<MementoId, List<MementoBranchId>> branchesByMemento = HashMap.empty();
     private Map<MementoBranchId, List<MementoId>> mementosByBranch = HashMap.empty();
 
@@ -59,6 +60,10 @@ public final class MementoModel<S> {
 
     public List<MementoId> getMementos(MementoBranchId branchId) {
         return mementosByBranch.get(branchId).getOrElse(List.empty());
+    }
+
+    public List<MementoId> getAllMementosFlattened() {
+        return mementos.keySet().toList();
     }
 
     public List<MementoBranchId> getBranches(MementoId mementoId) {
