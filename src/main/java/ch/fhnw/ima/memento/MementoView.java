@@ -102,13 +102,7 @@ public final class MementoView<S> extends Region {
                     return CIRCLE_STROKE_COLOR_UNSELECTED;
                 }
             }, selectionModel));
-            circle.setOnMouseClicked(e -> {
-                if (mementoEq(memento, selectionModel.get())) {
-                    selectionModel.set(Option.none());
-                } else {
-                    selectionModel.set(Option.some(mementoRef));
-                }
-            });
+            circle.setOnMouseClicked(e -> selectionModel.set(Option.some(mementoRef)));
             circle.setCursor(Cursor.HAND);
 
             Tooltip tooltip = new Tooltip(memento.getToolTip());
