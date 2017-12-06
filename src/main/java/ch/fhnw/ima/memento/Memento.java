@@ -10,12 +10,14 @@ package ch.fhnw.ima.memento;
 public final class Memento<S> {
 
     private final MementoId id;
-    private final String displayName;
+    private final String label;
+    private final String toolTip;
     private final S state;
 
-    public Memento(MementoId id, String displayName, S state) {
+    public Memento(MementoId id, String label, String toolTip, S state) {
         this.id = id;
-        this.displayName = displayName;
+        this.label = label;
+        this.toolTip = toolTip;
         this.state = state;
     }
 
@@ -23,8 +25,12 @@ public final class Memento<S> {
         return id;
     }
 
-    public String getDisplayName() {
-        return displayName;
+    public String getLabel() {
+        return label;
+    }
+
+    public String getToolTip() {
+        return toolTip;
     }
 
     public S getState() {

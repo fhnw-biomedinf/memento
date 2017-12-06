@@ -37,7 +37,7 @@ public class App extends Application {
     private static final double HEIGHT = 600;
 
     private final AtomicInteger counter = new AtomicInteger(0);
-    private final Originator<Integer> originator = id -> new Memento<>(id, String.valueOf(counter.incrementAndGet()), counter.get());
+    private final Originator<Integer> originator = id -> new Memento<>(id, String.valueOf(counter.incrementAndGet()), String.valueOf(counter.get()), counter.get());
     private final ColorHandler colorHandler = new ColorHandler();
 
     @Override
@@ -75,7 +75,7 @@ public class App extends Application {
             selectedMementoValueLabel.setText("–");
             if (!newValue.isEmpty()) {
                 Option<Memento<Integer>> mementoOption = model.getMemento(newValue.get().getMementoId());
-                mementoOption.forEach(memento -> selectedMementoValueLabel.setText(memento.getDisplayName()));
+                mementoOption.forEach(memento -> selectedMementoValueLabel.setText(memento.getLabel()));
             }
         });
 

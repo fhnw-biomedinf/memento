@@ -9,6 +9,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -110,7 +111,10 @@ public final class MementoView<S> extends Region {
             });
             circle.setCursor(Cursor.HAND);
 
-            Text text = new Text(memento.getDisplayName());
+            Tooltip tooltip = new Tooltip(memento.getToolTip());
+            Tooltip.install(circle, tooltip);
+
+            Text text = new Text(memento.getLabel());
             text.setMouseTransparent(true);
             text.setBoundsType(TextBoundsType.VISUAL);
 

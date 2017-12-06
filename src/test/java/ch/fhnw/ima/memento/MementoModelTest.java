@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static ch.fhnw.ima.memento.MementoTestUtil.DUMMY_TOOLTIP;
 import static ch.fhnw.ima.memento.MementoTestUtil.mockOriginator;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -23,8 +24,8 @@ class MementoModelTest {
         MementoModel<Integer> model = new MementoModel<>();
         assertTrue(model.getMementos(model.getMasterBranchId()).isEmpty());
 
-        MementoId one = model.appendToMasterBranch(id -> new Memento<>(id, "1", 1));
-        MementoId two = model.appendToMasterBranch(id -> new Memento<>(id, "2", 2));
+        MementoId one = model.appendToMasterBranch(id -> new Memento<>(id, "1", DUMMY_TOOLTIP, 1));
+        MementoId two = model.appendToMasterBranch(id -> new Memento<>(id, "2", DUMMY_TOOLTIP, 2));
 
         List<Memento<Integer>> mementos = model.getMementos(model.getMasterBranchId()).flatMap(model::getMemento);
 
@@ -39,7 +40,7 @@ class MementoModelTest {
         mementos.forEach(m -> {
             Option<Memento<Integer>> mementoOption = model.getMemento(m.getId());
             assertTrue(mementoOption.isDefined());
-            assertEquals(m.getDisplayName(), mementoOption.get().getDisplayName());
+            assertEquals(m.getLabel(), mementoOption.get().getLabel());
             assertEquals(m.getState(), mementoOption.get().getState());
         });
 
