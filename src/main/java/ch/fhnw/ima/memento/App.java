@@ -44,11 +44,10 @@ public class App extends Application {
     public void start(Stage stage) {
         MementoModel<Integer> caretaker = new MementoModel<>();
         MementoView<Integer> mementoView = new MementoView<>(caretaker, colorHandler);
+        Pane controlPanel = createControlPanel(caretaker, mementoView.getSelectionModel(), mementoView.appendAllowedProperty());
 
         // Create an initial Memento
         caretaker.appendToMasterBranch(originator);
-
-        Pane controlPanel = createControlPanel(caretaker, mementoView.getSelectionModel(), mementoView.appendAllowedProperty());
 
         BorderPane root = new BorderPane();
         root.setPadding(new Insets(5));
