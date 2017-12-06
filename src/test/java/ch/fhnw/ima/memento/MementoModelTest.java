@@ -47,6 +47,24 @@ class MementoModelTest {
     }
 
     @Test
+    void allMementosFlattened() {
+        MementoModel<String> model = new MementoModel<>();
+
+        model.appendToMasterBranch(mockOriginator("throwaway"));
+
+        model.clear();
+
+        MementoId one = model.appendToMasterBranch(mockOriginator("1"));
+        model.appendToNewBranch(one, mockOriginator("2"));
+        model.appendToMasterBranch(mockOriginator("3"));
+
+        List<Memento<String>> mementos = model.getAllMementosFlattened().flatMap(model::getMemento);
+        assertEquals("1", mementos.get(0).getLabel());
+        assertEquals("2", mementos.get(1).getLabel());
+        assertEquals("3", mementos.get(2).getLabel());
+    }
+
+    @Test
     void clear() {
         MementoModel<String> model = new MementoModel<>();
 

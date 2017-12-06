@@ -93,7 +93,7 @@ public final class MementoModel<S> {
     }
 
     public void clear() {
-        mementos = HashMap.empty();
+        mementos = LinkedHashMap.empty();
         branchesByMemento = HashMap.empty();
         mementosByBranch = HashMap.empty();
     }
