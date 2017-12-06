@@ -126,7 +126,10 @@ public final class MementoView<S> extends Region {
     }
 
     private void drawMementoBranch(MementoBranchId branch) {
-        getChildren().add(draw(branch));
+        Group group = draw(branch);
+        group.setTranslateX(getInsets().getLeft());
+        group.setTranslateY(getInsets().getTop());
+        getChildren().add(group);
     }
 
     private Group draw(MementoBranchId branch) {
