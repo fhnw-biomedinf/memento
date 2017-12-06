@@ -5,7 +5,11 @@ plugins {
 
 apply from: 'gradle/dependencies.gradle'
 
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 compileJava.options.encoding = 'UTF-8'
+
+group = 'ch.fhnw.ima'
 
 repositories {
     mavenCentral()
