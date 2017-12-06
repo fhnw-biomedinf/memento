@@ -18,6 +18,12 @@ import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextBoundsType;
 
+/**
+ * Displays a tree of {@link Memento}s as stored in a {@link MementoModel}.
+ *
+ * @param <S> State type of mementos kept in model
+ * @author Rahel Lüthy
+ */
 public final class MementoView<S> extends Region {
 
     private static final Color CIRCLE_STROKE_COLOR_SELECTED = Color.BLACK;
@@ -34,11 +40,13 @@ public final class MementoView<S> extends Region {
     private final MementoModel<S> model;
     private final Function1<MementoBranchId, Color> colorProvider;
     private final BooleanProperty appendAllowed = new SimpleBooleanProperty(false);
+    private final RowHeightCalculator<S> rowHeightCalculator;
 
     @SuppressWarnings("WeakerAccess")
     public MementoView(MementoModel<S> model, Function1<MementoBranchId, Color> colorProvider) {
         this.model = model;
         this.colorProvider = colorProvider;
+        this.rowHeightCalculator = new RowHeightCalculator<>(model);
 
         model.addListener((MementoRef mementoRef) -> {
             getChildren().clear();
@@ -48,8 +56,8 @@ public final class MementoView<S> extends Region {
 
         selectionModel.addListener((observable, oldValue, newValue) -> {
             boolean isTip = newValue.map(ref -> {
-                List<? extends Memento<?>> mementos = model.getMementos(ref.getBranchId());
-                return !mementos.isEmpty() && mementos.last().getId().equals(ref.getMementoId());
+                List<MementoId> mementos = model.getMementos(ref.getBranchId());
+                return !mementos.isEmpty() && mementos.last().equals(ref.getMementoId());
             }).getOrElse(false);
             appendAllowed.set(isTip);
         });
@@ -126,7 +134,7 @@ public final class MementoView<S> extends Region {
     }
 
     private void drawBranchImpl(MementoBranchId branchId, final int col, final int row, Group nodeGroup, Group lineGroup, Color color, Option<Point2D> optionalParentCoordinates) {
-        List<Memento<S>> mementos = model.getMementos(branchId);
+        List<Memento<S>> mementos = model.getMementos(branchId).flatMap(model::getMemento);
         for (int i = 0; i < mementos.size(); i++) {
             Memento memento = mementos.get(i);
             int mementoCol = col + i;
@@ -156,13 +164,13 @@ public final class MementoView<S> extends Region {
                 }
             });
 
-            int rowHeight = model.getRowHeight(branchId, i + 1);
+            int rowHeight = rowHeightCalculator.calcRowHeight(branchId, i + 1);
 
             int siblingRowHeightAcc = 0;
 
             List<MementoBranchId> branches = model.getBranches(memento.getId());
             for (int j = 0; j < branches.size(); j++) {
-                siblingRowHeightAcc += j == 0 ? 0 : model.getRowHeight(branches.get(j - 1), 0);
+                siblingRowHeightAcc += j == 0 ? 0 : rowHeightCalculator.calcRowHeight(branches.get(j - 1), 0);
                 MementoBranchId childBranch = branches.get(j);
                 drawBranchImpl(childBranch, (i + col) + 1, row + rowHeight + siblingRowHeightAcc, nodeGroup, lineGroup, colorProvider.apply(childBranch), mementoCoordinates);
             }

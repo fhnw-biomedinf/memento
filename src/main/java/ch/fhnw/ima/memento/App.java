@@ -42,11 +42,11 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) {
-        MementoModel<Integer> caretaker = new CareTakingMementoModel<>();
+        MementoModel<Integer> caretaker = new MementoModel<>();
         MementoView<Integer> mementoView = new MementoView<>(caretaker, colorHandler);
 
         // Create an initial Memento
-        caretaker.save(originator);
+        caretaker.appendToMasterBranch(originator);
 
         Pane controlPanel = createControlPanel(caretaker, mementoView.getSelectionModel(), mementoView.appendAllowedProperty());
 
@@ -84,14 +84,14 @@ public class App extends Application {
         appendButton.disableProperty().bind(appendAllowedProperty.not());
         appendButton.setOnAction(e -> {
             MementoBranchId branchId = selectionModel.get().get().getBranchId();
-            model.save(branchId, originator);
+            model.appendToBranch(branchId, originator);
         });
 
         Button forkButton = new Button("Branch");
         forkButton.disableProperty().bind(Bindings.createBooleanBinding(() -> selectionModel.get().isEmpty(), selectionModel));
         forkButton.setOnAction(e -> {
             MementoId mementoId = selectionModel.get().get().getMementoId();
-            model.saveForked(mementoId, originator);
+            model.appendToNewBranch(mementoId, originator);
         });
 
         Button clearButton = new Button("Clear");
@@ -99,7 +99,7 @@ public class App extends Application {
             colorHandler.reset();
             model.clear();
             counter.set(0);
-            model.save(originator);
+            model.appendToMasterBranch(originator);
         });
 
         HBox centerBox = new HBox(5, selectedMementoLabel, selectedMementoValueLabel);
