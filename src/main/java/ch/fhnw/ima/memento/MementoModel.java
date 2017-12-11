@@ -15,8 +15,7 @@ import java.util.UUID;
  * A model starts out with an (empty) master branch, to which mementos can be appended. Either they are appended to
  * an existing branch, or a new branch is forked-off, to which the memento is then appended.
  * <p>
- * Mementos are created by an {@link Originator}, who knows how to capture application state. Because all bookkeeping
- * relies on unique ids, this model is responsible for the creation of new ids (which it passes on to the originator).
+ * Mementos are created by an {@link Originator}, who knows how to capture application state.
  * <p>
  * Loosely inspired by the classic <a href="https://en.wikipedia.org/wiki/Memento_pattern">Memento Pattern</a>, in
  * which this class takes the role of the caretaker.

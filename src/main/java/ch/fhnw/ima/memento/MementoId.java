@@ -12,6 +12,9 @@ public interface MementoId {
 
     // Used to check equality
 
+    /**
+     * A {@link MementoId} implementation backed by a {@link UUID}.
+     */
     final class DefaultMementoId implements MementoId {
 
         private final UUID value;
