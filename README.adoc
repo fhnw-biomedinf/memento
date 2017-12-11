@@ -1,0 +1,6 @@
+= Memento
+
+Tracking and visualization of application state history.
+Loosely inspired by the classic https://en.wikipedia.org/wiki/Memento_pattern[Memento Pattern].
+
+image:memento-demo.gif[]
