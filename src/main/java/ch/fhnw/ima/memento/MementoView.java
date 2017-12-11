@@ -37,33 +37,31 @@ public final class MementoView<S> extends Region {
     private static final double OFFSET_X = 50;
     private static final double OFFSET_Y = 50;
 
-    private final ObjectProperty<Option<MementoRef>> selectionModel = new SimpleObjectProperty<>(Option.none());
+    private final ObjectProperty<Option<MementoRef>> selectionModel;
     private final MementoModel<S> model;
     private final Function1<MementoBranchId, Color> colorProvider;
     private final BooleanProperty appendAllowed = new SimpleBooleanProperty(false);
     private final RowHeightCalculator<S> rowHeightCalculator;
 
     @SuppressWarnings("WeakerAccess")
-    public MementoView(MementoModel<S> model, Function1<MementoBranchId, Color> colorProvider) {
+    public MementoView(MementoModel<S> model, ObjectProperty<Option<MementoRef>> selectionModel, Function1<MementoBranchId, Color> colorProvider) {
         this.model = model;
+        this.selectionModel = selectionModel;
         this.colorProvider = colorProvider;
         this.rowHeightCalculator = new RowHeightCalculator<>(model);
 
         model.addListener((MementoRef mementoRef) -> {
             getChildren().clear();
-            selectionModel.set(Option.some(mementoRef));
             drawMementoBranch(model.getMasterBranchId());
         });
 
-        selectionModel.addListener((observable, oldValue, newValue) -> {
+        this.selectionModel.addListener((observable, oldValue, newValue) -> {
             boolean isTip = newValue.map(ref -> {
                 List<MementoId> mementos = model.getMementos(ref.getBranchId());
                 return !mementos.isEmpty() && mementos.last().equals(ref.getMementoId());
             }).getOrElse(false);
             appendAllowed.set(isTip);
         });
-
-        selectionModel.set(Option.none());
 
         drawMementoBranch(model.getMasterBranchId());
     }

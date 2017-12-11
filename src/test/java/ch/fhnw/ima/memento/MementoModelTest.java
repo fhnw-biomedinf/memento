@@ -24,8 +24,8 @@ class MementoModelTest {
         MementoModel<Integer> model = new MementoModel<>();
         assertTrue(model.getMementos(model.getMasterBranchId()).isEmpty());
 
-        MementoId one = model.appendToMasterBranch(id -> new Memento<>(id, "1", DUMMY_TOOLTIP, 1));
-        MementoId two = model.appendToMasterBranch(id -> new Memento<>(id, "2", DUMMY_TOOLTIP, 2));
+        MementoId one = model.appendToMasterBranch(() -> new Originator.Capture<>(new Memento<>(new MementoId.DefaultMementoId(), "1", DUMMY_TOOLTIP, 1), true));
+        MementoId two = model.appendToMasterBranch(() -> new Originator.Capture<>(new Memento<>(new MementoId.DefaultMementoId(), "2", DUMMY_TOOLTIP, 2), true));
 
         List<Memento<Integer>> mementos = model.getMementos(model.getMasterBranchId()).flatMap(model::getMemento);
 

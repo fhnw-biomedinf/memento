@@ -35,19 +35,7 @@ public final class MementoModel<S> {
 
     @SuppressWarnings("WeakerAccess")
     public MementoModel() {
-        this.masterBranchId = createNewMementoBranchId();
-    }
-
-    private static MementoBranchId createNewMementoBranchId() {
-        return createNewId(MementoBranchId.class.getSimpleName());
-    }
-
-    private static MementoId createNewMementoId() {
-        return createNewId(MementoId.class.getSimpleName());
-    }
-
-    private static Id createNewId(String displayName) {
-        return new Id(UUID.randomUUID(), displayName);
+        this.masterBranchId = new MementoBranchIdImpl();
     }
 
     public Option<Memento<S>> getMemento(MementoId mementoId) {
@@ -75,17 +63,20 @@ public final class MementoModel<S> {
     }
 
     public MementoId appendToBranch(MementoBranchId branchId, Originator<S> originator) {
-        MementoId mementoId = createNewMementoId();
-        Memento<S> memento = originator.captureMemento(mementoId);
+        Originator.Capture<S> result = originator.createCapture();
+        Memento<S> memento = result.getMemento();
+        MementoId mementoId = memento.getId();
         mementos = mementos.put(mementoId, memento);
         List<MementoId> existingMementoIds = mementosByBranch.getOrElse(branchId, List.empty());
         mementosByBranch = mementosByBranch.put(branchId, existingMementoIds.append(memento.getId()));
-        fireModelChanged(new MementoRef(mementoId, branchId));
+        if (result.isShouldFireModelChanged()) {
+            fireModelChanged(new MementoRef(mementoId, branchId));
+        }
         return mementoId;
     }
 
     public MementoRef appendToNewBranch(MementoId branchRoot, Originator<S> originator) {
-        MementoBranchId branchId = createNewMementoBranchId();
+        MementoBranchId branchId = new MementoBranchIdImpl();
         List<MementoBranchId> existingBranches = branchesByMemento.getOrElse(branchRoot, List.empty());
         branchesByMemento = branchesByMemento.put(branchRoot, existingBranches.append(branchId));
         MementoId mementoId = appendToBranch(branchId, originator);
@@ -118,22 +109,20 @@ public final class MementoModel<S> {
 
     }
 
-    private static final class Id implements MementoId, MementoBranchId {
+    private static final class MementoBranchIdImpl implements MementoBranchId {
 
         private final UUID value;
-        private final String displayName;
 
-        private Id(UUID value, String displayName) {
-            this.value = value;
-            this.displayName = displayName;
+        private MementoBranchIdImpl() {
+            this.value = UUID.randomUUID();
         }
 
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
-            Id mementoId = (Id) o;
-            return Objects.equals(value, mementoId.value);
+            MementoBranchIdImpl mementoMementoBranchIdImpl = (MementoBranchIdImpl) o;
+            return Objects.equals(value, mementoMementoBranchIdImpl.value);
         }
 
         @Override
@@ -143,7 +132,7 @@ public final class MementoModel<S> {
 
         @Override
         public String toString() {
-            return displayName + "<" + value + ">";
+            return "MementoBranchId <" + value + ">";
         }
 
     }

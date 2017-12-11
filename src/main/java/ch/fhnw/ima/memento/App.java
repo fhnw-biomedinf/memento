@@ -10,8 +10,10 @@ import io.vavr.control.Option;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -37,17 +39,23 @@ public class App extends Application {
     private static final double HEIGHT = 600;
 
     private final AtomicInteger counter = new AtomicInteger(0);
-    private final Originator<Integer> originator = id -> new Memento<>(id, String.valueOf(counter.incrementAndGet()), String.valueOf(counter.get()), counter.get());
+    private final Originator<Integer> originator = () -> {
+        Memento<Integer> memento = new Memento<>(new MementoId.DefaultMementoId(), String.valueOf(counter.incrementAndGet()), String.valueOf(counter.get()), counter.get());
+        return new Originator.Capture<>(memento, true);
+    };
     private final ColorHandler colorHandler = new ColorHandler();
 
     @Override
     public void start(Stage stage) {
-        MementoModel<Integer> caretaker = new MementoModel<>();
-        MementoView<Integer> mementoView = new MementoView<>(caretaker, colorHandler);
-        Pane controlPanel = createControlPanel(caretaker, mementoView.getSelectionModel(), mementoView.appendAllowedProperty());
+        MementoModel<Integer> model = new MementoModel<>();
+        ObjectProperty<Option<MementoRef>> selectionModel = new SimpleObjectProperty<>(Option.none());
+        MementoView<Integer> mementoView = new MementoView<>(model, selectionModel, colorHandler);
+        Pane controlPanel = createControlPanel(model, mementoView.getSelectionModel(), mementoView.appendAllowedProperty());
+
+        model.addListener(mementoRef -> selectionModel.set(Option.some(mementoRef)));
 
         // Create an initial Memento
-        caretaker.appendToMasterBranch(originator);
+        model.appendToMasterBranch(originator);
 
         BorderPane root = new BorderPane();
         root.setPadding(new Insets(5));
