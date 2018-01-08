@@ -108,4 +108,47 @@ class MementoModelTest {
 
     }
 
+    @Test
+    void replaceExisting() {
+        MementoModel<String> model = new MementoModel<>();
+        MementoId mementoId = model.appendToMasterBranch(mockOriginator("*"));
+
+        Option<Memento<String>> mementoOption = model.getMemento(mementoId);
+        assertTrue(mementoOption.isDefined());
+
+        // Using the same Id will lead to an actual replacement
+        MementoId sameId = mementoOption.get().getId();
+
+        final String REPLACED_LABEL = "replacedLabel";
+        boolean replacedExisting = model.replace(() -> new Originator.Capture<>(
+                new Memento<>(sameId, REPLACED_LABEL, "replaceToolTip", "replacedState"), true)
+        );
+        assertTrue(replacedExisting);
+        assertTrue(model.getMemento(mementoId).isDefined());
+        assertEquals(REPLACED_LABEL, model.getMemento(mementoId).get().getLabel());
+    }
+
+    @Test
+    void replaceNonExisting() {
+        final String ORIGINAL_LABEL = "*";
+        MementoModel<String> model = new MementoModel<>();
+        MementoId mementoId = model.appendToMasterBranch(mockOriginator(ORIGINAL_LABEL));
+
+        Option<Memento<String>> mementoOption = model.getMemento(mementoId);
+        assertTrue(mementoOption.isDefined());
+
+        // Using a new Id will NOT lead to a replacement
+        MementoId.DefaultMementoId newId = new MementoId.DefaultMementoId();
+
+        boolean replacedExisting = model.replace(() -> new Originator.Capture<>(
+                new Memento<>(newId, "replacedLabel", "replaceToolTip", "replacedState"), true)
+        );
+
+        assertFalse(replacedExisting);
+        // old one still exists...
+        assertTrue(model.getMemento(mementoId).isDefined());
+        // ... but with original rather than replaced values
+        assertEquals(ORIGINAL_LABEL, model.getMemento(mementoId).get().getLabel());
+    }
+
 }

@@ -82,6 +82,21 @@ public final class MementoModel<S> {
         return new MementoRef(mementoId, branchId);
     }
 
+    public boolean replace(Originator<S> originator) {
+        Originator.Capture<S> capture = originator.createCapture();
+        Memento<S> memento = capture.getMemento();
+        MementoId mementoId = memento.getId();
+        mementos = mementos.replaceValue(mementoId, memento);
+
+        if (capture.isShouldFireModelChanged()) {
+            for (MementoBranchId branchId : getBranches(mementoId)) {
+                fireModelChanged(new MementoRef(mementoId, branchId));
+            }
+        }
+
+        return mementos.containsKey(mementoId);
+    }
+
     public void clear() {
         mementos = LinkedHashMap.empty();
         branchesByMemento = HashMap.empty();
